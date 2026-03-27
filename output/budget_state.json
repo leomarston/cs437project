@@ -1,0 +1,18 @@
+{
+  "fastjson2": {
+    "detections": {
+      "SRP": 12,
+      "OCP": 12,
+      "LSP": 12,
+      "ISP": 5,
+      "DIP": 0
+    },
+    "refactorings": {
+      "SRP": 0,
+      "OCP": 0,
+      "LSP": 0,
+      "ISP": 0,
+      "DIP": 0
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "repo": "kotlinx-coroutines",
+  "language": "kotlin",
+  "violations": [],
+  "notes": "Ground truth violations to be populated during manual review."
+}

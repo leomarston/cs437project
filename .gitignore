@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Output
+output/findings/
+output/refactors/
+output/metrics/
+output/reports/
+
+# Repos (cloned locally)
+repos/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,35 @@
+repositories:
+  - name: fastjson2
+    url: https://github.com/alibaba/fastjson2
+    language: java
+    branch: main
+    test_command: "mvn test -pl core -Dmaven.test.failure.ignore=true -q"
+    source_dirs:
+      - "core/src/main/java"
+
+  - name: kotlinx-coroutines
+    url: https://github.com/Kotlin/kotlinx.coroutines
+    language: kotlin
+    branch: master
+    test_command: "./gradlew :kotlinx-coroutines-core:test"
+    source_dirs:
+      - "kotlinx-coroutines-core/common/src"
+      - "kotlinx-coroutines-core/jvm/src"
+
+  - name: flask
+    url: https://github.com/pallets/flask
+    language: python
+    branch: main
+    test_command: "pytest tests/ -v"
+    source_dirs:
+      - "src/flask"
+
+budget:
+  detections_per_repo: 60
+  refactorings_per_repo: 60
+  per_principle: 12
+
+gemini:
+  model: "gemini-2.0-flash"
+  temperature: 0.2
+  max_output_tokens: 8192

@@ -1,0 +1,6 @@
+{
+  "repo": "flask",
+  "language": "python",
+  "violations": [],
+  "notes": "Ground truth violations to be populated during manual review."
+}

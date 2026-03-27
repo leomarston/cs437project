@@ -1,6 +1,253 @@
 {
   "repo": "fastjson2",
-  "language": "java",
-  "violations": [],
-  "notes": "Ground truth violations to be populated during manual review."
+  "violations": [
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "nextIfName4Match26",
+      "line_start": 6244,
+      "line_end": 6264,
+      "description": "Method `nextIfName4Match26` is part of a series of methods that perform highly specific matching of JSON names with varying lengths and data types. This suggests that the interface or abstract class containing these methods is too broad and forces implementations to provide methods they might not need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/writer/ObjectWriterImplInstant.java",
+      "symbol_name": "ObjectWriterImplInstant",
+      "line_start": 8,
+      "line_end": 204,
+      "description": "The class implements both DateTimeCodec and ObjectWriter, potentially forcing it to depend on methods it doesn't directly use from DateTimeCodec."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "readHex",
+      "line_start": 319,
+      "line_end": 387,
+      "description": "The `readHex` method might not be used by all clients of `JSONReaderUTF16`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "readReference",
+      "line_start": 441,
+      "line_end": 484,
+      "description": "The `readReference` method might not be used by all clients of `JSONReaderUTF16`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/writer/ObjectWriter8.java",
+      "symbol_name": "ObjectWriter8",
+      "line_start": 7,
+      "line_end": 129,
+      "description": "The `ObjectWriter8` class is tightly coupled to a fixed number (8) of `FieldWriter` instances. This design forces clients (classes that need to serialize objects) to depend on the existence of exactly 8 fields, even if they only need to serialize objects with fewer fields. This is a violation of ISP because clients are forced to depend on the specific number of fields."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/util/DynamicClassLoader.java",
+      "symbol_name": "DynamicClassLoader",
+      "line_start": 9,
+      "line_end": 246,
+      "description": "The DynamicClassLoader eagerly loads and caches a large number of classes, many of which might not be necessary for all clients. This creates a dependency on these classes even if a client only needs to load a few dynamic classes."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/FieldReaderLocalDateTime.java",
+      "symbol_name": "FieldReaderLocalDateTime",
+      "line_start": 9,
+      "line_end": 138,
+      "description": "The class inherits from `FieldReaderDateTimeCodec` which likely contains methods that are not relevant to all `FieldReaderLocalDateTime` instances, especially those that only deal with LocalDateTime."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/FieldReaderLocalDateTime.java",
+      "symbol_name": "accept(Object object, ZonedDateTime zdt)",
+      "line_start": 67,
+      "line_end": 71,
+      "description": "The `accept` method for `ZonedDateTime` converts it to `LocalDateTime`. This suggests that the class is forced to handle `ZonedDateTime` even if its primary concern is `LocalDateTime`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/FieldReaderLocalDateTime.java",
+      "symbol_name": "apply(Date value)",
+      "line_start": 73,
+      "line_end": 77,
+      "description": "The `apply` method for `Date` converts it to `LocalDateTime`. This suggests that the class is forced to handle `Date` even if its primary concern is `LocalDateTime`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/FieldReaderLocalDateTime.java",
+      "symbol_name": "apply(Instant instant)",
+      "line_start": 79,
+      "line_end": 83,
+      "description": "The `apply` method for `Instant` converts it to `LocalDateTime`. This suggests that the class is forced to handle `Instant` even if its primary concern is `LocalDateTime`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/FieldReaderLocalDateTime.java",
+      "symbol_name": "apply(ZonedDateTime zdt)",
+      "line_start": 85,
+      "line_end": 88,
+      "description": "The `apply` method for `ZonedDateTime` converts it to `LocalDateTime`. This suggests that the class is forced to handle `ZonedDateTime` even if its primary concern is `LocalDateTime`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "JSONReaderUTF16",
+      "line_start": 4931,
+      "line_end": 5430,
+      "description": "The class implements multiple read methods for different date/time formats, suggesting a fat interface or base class that forces it to implement methods it might not always need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "readLocalDate",
+      "line_start": 4945,
+      "line_end": 5000,
+      "description": "This method handles multiple date parsing strategies, indicating it might be trying to do too much and forcing clients to depend on parsing logic they don't need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONReaderUTF16.java",
+      "symbol_name": "readOffsetDateTime",
+      "line_start": 5036,
+      "line_end": 5106,
+      "description": "This method handles multiple OffsetDateTime parsing strategies, indicating it might be trying to do too much and forcing clients to depend on parsing logic they don't need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/support/csv/CSVWriter.java",
+      "symbol_name": "CSVWriter",
+      "line_start": 25,
+      "line_end": 388,
+      "description": "The `CSVWriter` class is a fat interface/abstract class, forcing subclasses to implement methods they might not need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/support/csv/CSVWriter.java",
+      "symbol_name": "writeLocalDateTime",
+      "line_start": 109,
+      "line_end": 109,
+      "description": "The `writeLocalDateTime` method is an abstract method that might not be needed by all implementations."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/support/csv/CSVWriter.java",
+      "symbol_name": "writeDateYYYMMDD10",
+      "line_start": 257,
+      "line_end": 257,
+      "description": "The `writeDateYYYMMDD10` method is an abstract method that might not be needed by all implementations."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/support/csv/CSVWriter.java",
+      "symbol_name": "writeDateTime19",
+      "line_start": 259,
+      "line_end": 264,
+      "description": "The `writeDateTime19` method is an abstract method that might not be needed by all implementations."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/introspect/MethodAccessor.java",
+      "symbol_name": "MethodAccessor",
+      "line_start": 12,
+      "line_end": 99,
+      "description": "The `MethodAccessor` class couples getter and setter functionality, potentially forcing clients that only need to get or set a property to depend on both."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/ObjectReaderSeeAlso.java",
+      "symbol_name": "readObject",
+      "line_start": 155,
+      "line_end": 371,
+      "description": "The `readObject` method handles both JSON and JSONB formats. This could be a violation of ISP if a client only needs to read one format but is forced to depend on the logic for both."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONPathFilter.java",
+      "symbol_name": "JSONPathFilter",
+      "line_start": 1496,
+      "line_end": 1806,
+      "description": "The abstract class `JSONPathFilter` defines methods that are not universally applicable to all its subclasses, forcing some subclasses to throw UnsupportedOperationExceptions or implement empty methods."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONPathFilter.java",
+      "symbol_name": "apply(Object fieldValue)",
+      "line_start": 1533,
+      "line_end": 1535,
+      "description": "The `apply(Object fieldValue)` method in `NameEqualsFilter` always throws a `JSONException(\"TODO\")`, indicating that it's not a meaningful operation for this specific filter type."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONPathFilter.java",
+      "symbol_name": "accept(JSONReader jsonReader, JSONPath.Context context)",
+      "line_start": 1579,
+      "line_end": 1581,
+      "description": "The `accept` method in `SegmentFilter` always throws a `JSONException`, indicating that it's not a meaningful operation for this specific filter type."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/reader/ObjectReaderImplCalendar.java",
+      "symbol_name": "ObjectReaderImplCalendar",
+      "line_start": 8,
+      "line_end": 111,
+      "description": "ObjectReaderImplCalendar implements ObjectReader, which might be a fat interface."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "JSONArray",
+      "line_start": 991,
+      "line_end": 1487,
+      "description": "JSONArray has methods for various type conversions (e.g., getOffsetDateTime, getZonedDateTime, toList, toArray, getObject) and serialization (toString, toJSONString, toJSONBBytes). This makes it a 'fat' interface/class, potentially forcing clients to depend on functionalities they don't need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "toString(JSONWriter.Feature... features)",
+      "line_start": 1037,
+      "line_end": 1053,
+      "description": "The toString method with features parameter is related to serialization. Clients that only need JSONArray as a data structure shouldn't depend on serialization features."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "toJSONString(JSONWriter.Feature... features)",
+      "line_start": 1055,
+      "line_end": 1057,
+      "description": "Similar to toString(JSONWriter.Feature... features), this method is related to serialization and introduces unnecessary dependency for clients not needing serialization."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "toJSONBBytes(JSONWriter.Feature... features)",
+      "line_start": 1067,
+      "line_end": 1073,
+      "description": "This method is related to serialization to JSONB format. Clients that only need JSONArray as a data structure shouldn't depend on JSONB serialization features."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "toList(Class<T> itemClass, JSONReader.Feature... features)",
+      "line_start": 1141,
+      "line_end": 1183,
+      "description": "The toList method provides type conversion functionality. Clients that only need JSONArray as a data structure shouldn't depend on type conversion features."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "toArray(Class<T> itemClass, JSONReader.Feature... features)",
+      "line_start": 1185,
+      "line_end": 1227,
+      "description": "The toArray method provides type conversion functionality. Clients that only need JSONArray as a data structure shouldn't depend on type conversion features."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "core/src/main/java/com/alibaba/fastjson2/JSONArray.java",
+      "symbol_name": "getObject(int index, Type type, JSONReader.Feature... features)",
+      "line_start": 1251,
+      "line_end": 1306,
+      "description": "The getObject(int index, Type type, JSONReader.Feature... features) method provides type conversion functionality. Clients that only need JSONArray as a data structure shouldn't depend on type conversion features."
+    }
+  ]
 }

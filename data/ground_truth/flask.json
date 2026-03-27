@@ -1,6 +1,141 @@
 {
   "repo": "flask",
-  "language": "python",
-  "violations": [],
-  "notes": "Ground truth violations to be populated during manual review."
+  "violations": [
+    {
+      "principle": "LSP",
+      "file_path": "src/flask/cli.py",
+      "symbol_name": "_validate_key",
+      "line_start": 374,
+      "line_end": 411,
+      "description": "The `_validate_key` function modifies the `ctx.params['cert']` value in place, potentially changing its type from a string to a tuple. This side effect violates LSP because it alters the state of the context in a way that might not be expected by callers of the `run_command` function, which relies on the context."
+    },
+    {
+      "principle": "LSP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "Flask.__init_subclass__",
+      "line_start": 158,
+      "line_end": 214,
+      "description": "The `__init_subclass__` method modifies the behavior of methods in subclasses of `Flask` by wrapping them with `remove_ctx` and `add_ctx`. This wrapping changes the method signature and argument handling, potentially breaking existing subclasses that rely on the original method signature."
+    },
+    {
+      "principle": "LSP",
+      "file_path": "src/flask/helpers.py",
+      "symbol_name": "abort",
+      "line_start": 165,
+      "line_end": 178,
+      "description": "The `abort` function's behavior changes based on the presence of a request context. If `current_app` is available, it uses `current_app.aborter`; otherwise, it uses `werkzeug.exceptions.abort`."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/testing.py",
+      "symbol_name": "FlaskClient",
+      "line_start": 102,
+      "line_end": 194,
+      "description": "The `FlaskClient` class's `open` method accepts a wide variety of argument types, including `werkzeug.test.EnvironBuilder`, `dict`, and `BaseRequest`. This suggests that the method is trying to handle too many different responsibilities, potentially forcing clients to depend on aspects of the method that they don't need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/testing.py",
+      "symbol_name": "FlaskCliRunner",
+      "line_start": 278,
+      "line_end": 296,
+      "description": "The `FlaskCliRunner` class's `invoke` method takes a generic `cli` argument of type `t.Any`. This lack of specificity can force clients to depend on the internal implementation details of the CLI framework."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/sessions.py",
+      "symbol_name": "SessionInterface",
+      "line_start": 100,
+      "line_end": 230,
+      "description": "The SessionInterface has methods related to cookie configuration that not all session implementations might need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/sessions.py",
+      "symbol_name": "SecureCookieSessionInterface",
+      "line_start": 308,
+      "line_end": 385,
+      "description": "The SecureCookieSessionInterface tightly couples session management with cookie handling, potentially forcing subclasses to deal with cookie-specific logic even if they have alternative storage mechanisms."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/wrappers.py",
+      "symbol_name": "Response",
+      "line_start": 147,
+      "line_end": 179,
+      "description": "The Response class inherits from werkzeug.wrappers.Response and adds Flask-specific attributes like json_module and properties like max_cookie_size. Not all users of a Response object will need these Flask-specific attributes."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "handle_exception",
+      "line_start": 898,
+      "line_end": 950,
+      "description": "The `handle_exception` method handles all exceptions that don't have specific error handlers. It logs the exception, creates an InternalServerError, finds a handler for that error (if any), and finalizes the request. This method does too much, forcing all exception handling to go through a single point, even if some parts of the process are not needed."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "handle_user_exception",
+      "line_start": 843,
+      "line_end": 896,
+      "description": "The `handle_user_exception` method handles exceptions raised by user code. It checks for BadRequestKeyError, handles HTTPExceptions, finds an error handler, and returns a response. This method combines different responsibilities, potentially forcing clients to depend on aspects they don't need."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "make_response",
+      "line_start": 109,
+      "line_end": 249,
+      "description": "The `make_response` method handles a wide variety of return types from view functions, making it a 'fat' method."
+    },
+    {
+      "principle": "ISP",
+      "file_path": "src/flask/sansio/app.py",
+      "symbol_name": "App",
+      "line_start": 40,
+      "line_end": 494,
+      "description": "The `App` class has a `create_jinja_environment` method that raises `NotImplementedError`. This suggests that not all subclasses of `App` necessarily need to implement Jinja templating."
+    },
+    {
+      "principle": "DIP",
+      "file_path": "src/flask/helpers.py",
+      "symbol_name": "get_load_dotenv",
+      "line_start": 23,
+      "line_end": 32,
+      "description": "Directly accesses the environment variable FLASK_SKIP_DOTENV."
+    },
+    {
+      "principle": "DIP",
+      "file_path": "src/flask/helpers.py",
+      "symbol_name": "redirect",
+      "line_start": 157,
+      "line_end": 160,
+      "description": "Directly uses `_wz_redirect` from `werkzeug.utils` when `current_app` is not available."
+    },
+    {
+      "principle": "DIP",
+      "file_path": "src/flask/helpers.py",
+      "symbol_name": "_prepare_send_file_kwargs",
+      "line_start": 275,
+      "line_end": 275,
+      "description": "Directly uses `app_ctx`."
+    },
+    {
+      "principle": "DIP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "Flask.make_response",
+      "line_start": 141,
+      "line_end": 289,
+      "description": "Direct dependency on concrete response classes."
+    },
+    {
+      "principle": "DIP",
+      "file_path": "src/flask/app.py",
+      "symbol_name": "Flask.async_to_sync",
+      "line_start": 115,
+      "line_end": 139,
+      "description": "Direct dependency on asgiref library."
+    }
+  ]
 }

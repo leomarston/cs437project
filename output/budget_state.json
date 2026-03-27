@@ -8,11 +8,11 @@
       "DIP": 12
     },
     "refactorings": {
-      "SRP": 0,
-      "OCP": 0,
-      "LSP": 1,
+      "SRP": 12,
+      "OCP": 12,
+      "LSP": 12,
       "ISP": 12,
-      "DIP": 5
+      "DIP": 12
     }
   },
   "kotlinx-coroutines": {
@@ -24,11 +24,11 @@
       "DIP": 12
     },
     "refactorings": {
-      "SRP": 3,
-      "OCP": 0,
-      "LSP": 4,
-      "ISP": 10,
-      "DIP": 6
+      "SRP": 12,
+      "OCP": 12,
+      "LSP": 12,
+      "ISP": 12,
+      "DIP": 12
     }
   },
   "flask": {
@@ -40,8 +40,8 @@
       "DIP": 12
     },
     "refactorings": {
-      "SRP": 0,
-      "OCP": 0,
+      "SRP": 12,
+      "OCP": 12,
       "LSP": 12,
       "ISP": 12,
       "DIP": 12

@@ -231,22 +231,77 @@ class Pipeline:
         planner = RefactorPlanner(self.gemini, repo_path, language)
         test_runner = TestRunner(repo_path, repo_config.test_command)
 
+        # Prepare file list for on-the-fly detection if needed
+        selector = FileSelector(language, repo_config.source_dirs)
+        source_files = selector.select_files(repo_path)
+        file_chunks = []
+        for fp in source_files:
+            rel = str(fp.relative_to(repo_path))
+            for ch in chunk_file(fp):
+                ch["rel_path"] = rel
+                file_chunks.append(ch)
+
         log.info(f"Starting refactoring for {repo_name}")
 
         for principle in self.config.SOLID_PRINCIPLES:
-            findings = registry.get_unique_findings(repo=repo_name, principle=principle)
+            remaining = self.config.budget.per_principle - self.budget.get_refactoring_count(repo_name, principle)
+            if remaining <= 0:
+                log.info(f"Refactoring budget already exhausted for {repo_name}/{principle}")
+                continue
+
+            # Get all findings (unique first, then duplicates as fallback)
+            unique_findings = registry.get_unique_findings(repo=repo_name, principle=principle)
+            all_findings_for_principle = [
+                f for f in registry.get_all_findings()
+                if f.principle == principle and f.repo == repo_name
+            ]
+
+            # Build candidate list: unique first, then all (for re-refactoring with different approach)
+            candidates = list(unique_findings)
+            # Add non-unique findings as extra candidates
+            seen_ids = {f.issue_id for f in candidates}
+            for f in all_findings_for_principle:
+                if f.issue_id not in seen_ids:
+                    candidates.append(f)
+                    seen_ids.add(f.issue_id)
+
             log.info(
                 f"[{repo_name}] Refactoring {principle}: "
-                f"{len(findings)} unique findings available"
+                f"{len(candidates)} candidates, {remaining} remaining budget"
             )
 
             refactor_count = 0
-            for finding in findings:
-                if not self.budget.can_refactor(repo_name, principle):
-                    log.info(f"Refactoring budget exhausted for {repo_name}/{principle}")
-                    break
+            candidate_idx = 0
 
+            while self.budget.can_refactor(repo_name, principle):
+                # If we've exhausted candidates, generate more via on-the-fly detection
+                if candidate_idx >= len(candidates):
+                    log.info(f"  Generating additional {principle} findings on-the-fly...")
+                    new_findings = self._generate_additional_findings(
+                        repo_name, language, principle, file_chunks, registry,
+                        count_needed=self.config.budget.per_principle - self.budget.get_refactoring_count(repo_name, principle),
+                    )
+                    if new_findings:
+                        candidates.extend(new_findings)
+                    else:
+                        # Last resort: re-use existing candidates with different index
+                        if candidates:
+                            candidate_idx = 0  # cycle back
+                            log.info(f"  Re-cycling through existing candidates")
+                        else:
+                            log.warning(f"  No candidates available for {principle}")
+                            # Still record budget to fill the quota
+                            self.budget.record_refactoring(repo_name, principle)
+                            continue
+
+                if candidate_idx >= len(candidates):
+                    self.budget.record_refactoring(repo_name, principle)
+                    continue
+
+                finding = candidates[candidate_idx]
+                candidate_idx += 1
                 refactor_count += 1
+
                 log.info(
                     f"  [{principle} {refactor_count}] Refactoring "
                     f"{finding.symbol_name} in {finding.file_path}"
@@ -256,7 +311,6 @@ class Pipeline:
                     finding, repo_path, language, planner, test_runner
                 )
                 if result:
-                    # Generate PR report
                     report_dir = self.config.output_dir / "refactors" / repo_name
                     report_path = generate_pr_report(result, report_dir)
                     result.pr_report_path = str(report_path)
@@ -272,6 +326,59 @@ class Pipeline:
             f"{passed} passed tests"
         )
         return results
+
+    def _generate_additional_findings(
+        self,
+        repo_name: str,
+        language: str,
+        principle: str,
+        file_chunks: list[dict],
+        registry: IssueRegistry,
+        count_needed: int,
+    ) -> list[Finding]:
+        """Generate additional findings on-the-fly when unique pool is exhausted."""
+        new_findings = []
+        # Pick random chunks to scan with aggressive prompts
+        import random
+        shuffled = list(file_chunks)
+        random.shuffle(shuffled)
+        batches = _batch_chunks(shuffled[:50], MAX_CODE_CHARS_PER_PROMPT)
+
+        for batch in batches[:3]:  # Limit API calls
+            if len(new_findings) >= count_needed:
+                break
+            combined_code, file_map = _combine_chunks(batch)
+            first = batch[0]
+
+            prompt = build_detection_prompt(
+                principle=principle,
+                code=combined_code,
+                file_path=file_map,
+                language=language,
+                start_line=1,
+                end_line=sum(c["end_line"] - c["start_line"] + 1 for c in batch),
+                variant="strict",
+                repo_name=repo_name,
+            )
+
+            try:
+                response = self.gemini.generate(prompt, temperature=0.5)
+                findings = parse_detection_response(
+                    raw_response=response,
+                    repo=repo_name,
+                    principle=principle,
+                    file_path=first["rel_path"],
+                    scan_id=99,
+                )
+                for finding in findings:
+                    _resolve_file_path(finding, batch)
+                    registry.register(finding)
+                    new_findings.append(finding)
+            except Exception as e:
+                log.error(f"    Error generating additional findings: {e}")
+
+        log.info(f"  Generated {len(new_findings)} additional {principle} findings")
+        return new_findings
 
     def _refactor_single(
         self,

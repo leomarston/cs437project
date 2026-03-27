@@ -425,6 +425,59 @@ def seed(ctx, repo_name, principle, count):
     console.print(f"\n[bold green]Seeded {total_seeded} violations. Log saved to {seed_file}[/bold green]")
 
 
+@main.command("auto-annotate")
+@click.argument("repo_name")
+@click.pass_context
+def auto_annotate(ctx, repo_name):
+    """Automatically annotate findings and refactorings using a second LLM verification pass.
+
+    This uses Gemini to verify each finding with a different prompt, establishing
+    ground truth for precision/recall/F1 calculation. Much faster than manual review.
+    """
+    config = ctx.obj["config"]
+    pipeline = Pipeline(config)
+
+    from .auto_annotator import auto_annotate_detections, auto_annotate_refactorings
+
+    if repo_name == "all":
+        repos = config.repositories
+    else:
+        rc = _find_repo(config, repo_name)
+        if not rc:
+            console.print(f"[red]Repository '{repo_name}' not found in config[/red]")
+            sys.exit(1)
+        repos = [rc]
+
+    for repo_config in repos:
+        rname = repo_config.name
+        console.print(f"\n[bold cyan]Auto-annotating {rname}...[/bold cyan]")
+
+        # Annotate detections
+        registry_file = config.output_dir / "findings" / f"{rname}_registry.json"
+        repo_path = config.repos_dir / rname
+        if registry_file.exists():
+            console.print(f"[yellow]Verifying detection findings...[/yellow]")
+            det_count = auto_annotate_detections(
+                pipeline.gemini, registry_file, repo_path, repo_config.language
+            )
+            console.print(f"  Annotated {det_count} detection findings")
+        else:
+            console.print(f"  No detection data found for {rname}")
+
+        # Annotate refactorings
+        results_file = config.output_dir / "refactors" / f"{rname}_results.json"
+        if results_file.exists():
+            console.print(f"[yellow]Verifying refactoring results...[/yellow]")
+            ref_count = auto_annotate_refactorings(pipeline.gemini, results_file)
+            console.print(f"  Annotated {ref_count} refactoring results")
+        else:
+            console.print(f"  No refactoring data found for {rname}")
+
+    # Print summary stats
+    console.print(f"\n[bold green]Auto-annotation complete![/bold green]")
+    console.print("Now regenerate reports with: solid-analyzer report all")
+
+
 def _find_repo(config: Config, name: str):
     for repo in config.repositories:
         if repo.name == name:

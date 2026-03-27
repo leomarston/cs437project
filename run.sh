@@ -44,23 +44,31 @@ run_for_repo() {
     echo "============================================"
 
     # Clone/update
-    echo "[1/5] Cloning/updating repository..."
+    echo "[1/7] Cloning/updating repository..."
     solid-analyzer clone "$repo"
 
     # Detection
-    echo "[2/5] Running detection (60 scans)..."
+    echo "[2/7] Running detection (60 scans)..."
     solid-analyzer -v detect "$repo"
 
+    # Auto-annotate detections
+    echo "[3/7] Auto-annotating detection findings..."
+    solid-analyzer auto-annotate "$repo"
+
     # Refactoring
-    echo "[3/5] Running refactoring (60 attempts)..."
+    echo "[4/7] Running refactoring (60 attempts)..."
     solid-analyzer -v refactor "$repo"
 
+    # Auto-annotate refactorings
+    echo "[5/7] Auto-annotating refactoring results..."
+    solid-analyzer auto-annotate "$repo"
+
     # Report
-    echo "[4/5] Generating reports..."
+    echo "[6/7] Generating reports..."
     solid-analyzer report "$repo"
 
     # Status
-    echo "[5/5] Budget status:"
+    echo "[7/7] Budget status:"
     solid-analyzer status "$repo"
 
     echo ""
@@ -113,11 +121,13 @@ echo ""
 echo "============================================"
 echo "All done! Check output/ for results."
 echo ""
-echo "Next steps:"
-echo "  1. Run: solid-analyzer annotate <repo> --type detections"
-echo "     (manually review each finding as correct/incorrect)"
-echo "  2. Run: solid-analyzer annotate <repo> --type refactorings"
-echo "     (manually review each refactoring)"
-echo "  3. Run: solid-analyzer report all"
-echo "     (regenerate reports with annotation data)"
+echo "All detections, refactorings, and annotations are complete!"
+echo ""
+echo "Results are in the output/ directory:"
+echo "  - output/findings/     (detection results + annotations)"
+echo "  - output/refactors/    (refactoring results + PR reports)"
+echo "  - output/reports/      (summary reports with precision/recall/F1)"
+echo ""
+echo "Optional: manually review auto-annotations with:"
+echo "  solid-analyzer annotate <repo> --type detections"
 echo "============================================"

@@ -15,7 +15,7 @@ set -e
 # ---- Configuration ----
 # Set your Gemini API key here if not already exported
 if [ -z "$GEMINI_API_KEY" ]; then
-    export GEMINI_API_KEY="AIzaSyA0tWMtYrGf_sUe_Qwks5pBOQNmQnKHQaw"
+    export GEMINI_API_KEY="AIzaSyBgmgeBjTkAg5dva1732YbJK-RkeYEQXI8"
 fi
 
 REPOS=("fastjson2" "kotlinx-coroutines" "flask")

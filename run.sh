@@ -13,9 +13,12 @@
 set -e
 
 # ---- Configuration ----
-# Set your Gemini API key here if not already exported
+# GEMINI_API_KEY must be exported before running this script:
+#   export GEMINI_API_KEY="your-key-here"
 if [ -z "$GEMINI_API_KEY" ]; then
-    export GEMINI_API_KEY="AIzaSyBgmgeBjTkAg5dva1732YbJK-RkeYEQXI8"
+    echo "ERROR: GEMINI_API_KEY is not set."
+    echo "Run: export GEMINI_API_KEY=\"your-key-here\""
+    exit 1
 fi
 
 REPOS=("fastjson2" "kotlinx-coroutines" "flask")

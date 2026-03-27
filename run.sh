@@ -26,10 +26,16 @@ echo "SOLID Analyzer - CS437 Project"
 echo "Student: Ahmet Yağız Sarıdoğan"
 echo "============================================"
 
+# Detect pip command
+PIP="pip3"
+if ! command -v pip3 &> /dev/null; then
+    PIP="pip"
+fi
+
 # Install if needed
 if ! command -v solid-analyzer &> /dev/null; then
     echo "[SETUP] Installing solid-analyzer..."
-    pip install -e . --quiet
+    $PIP install -e . --quiet
 fi
 
 # ---- Determine mode ----
